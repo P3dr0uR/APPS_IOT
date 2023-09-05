@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
-contador = 11
+contador = 0
 
 class MyHTTPRequestHandler(BaseHTTPRequestHandler):
     def _set_response(self, content_type="text/plain"):
@@ -19,13 +19,14 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         
         body_json = json.loads(post_data.decode())
+        quantity = body_json.get('quantity')
         
         global contador
         
         if(body_json['action'] == 'asc'):
-            contador += 1
+            contador += quantity
         elif(body_json['action'] == 'desc'):
-            contador -= 1 
+            contador -= quantity
 
         # Crear una respuesta JSON con el valor actualizado de contador
         response_data = json.dumps({"message": "Received POST data", "contador": contador, "status": "OK"})
