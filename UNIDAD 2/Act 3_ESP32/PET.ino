@@ -1,12 +1,13 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 const char *ssid = "esp_wifi";
 const char *password = "password";
 
 // Your Domain name with URL path or IP address with path
 //La IP es la de la computadora
-String serverName = "http://192.168.4.7:7800/;
+String serverName = "http://192.168.4.7:7800/";
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -15,6 +16,16 @@ unsigned long lastTime = 0;
 // unsigned long timerDelay = 600000;
 // Set timer to 5 seconds (5000)
 unsigned long timerDelay = 5000;
+
+void post_asc()
+{
+  DynamicJsonDocument json_chido(1024)
+  json_chido["action"] = "asc";
+  json_chido["quantity"] = "1";
+}
+//Cadena JSON para enviar
+String json_str;
+serializeJson(json_chido,json_str);
 
 void setup()
 {

@@ -42,7 +42,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
       self.throw_custom_error("Invalid action")
       return
 
-    # Check if quantity is valid, integer
+    # Check if quantity is valid, integera
     try:
         int(body_json['quantity'])
     except:
