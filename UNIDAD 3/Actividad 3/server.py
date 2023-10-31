@@ -11,7 +11,9 @@ from paho.mqtt import client as mqtt_client
 
 BROKER = 'c098ae50.ala.us-east-1.emqxsl.com'
 PORT = 8883
-TOPIC = "test"
+SUB_TOPIC = "monitores/#"
+TOPIC = "monitores/server"
+
 # generate client ID with pub prefix randomly
 CLIENT_ID = f'python-mqtt-tls-pub-sub-{random.randint(0, 1000)}'
 USERNAME = 'server'
@@ -22,13 +24,13 @@ RECONNECT_RATE = 2
 MAX_RECONNECT_COUNT = 12
 MAX_RECONNECT_DELAY = 60
 
-FLAG_EXIT = False
+FLAG_EXIT = True
 
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0 and client.is_connected():
         print("Connected to MQTT Broker!")
-        client.subscribe(TOPIC)
+        client.subscribe(SUB_TOPIC)
     else:
         print(f'Failed to connect, return code {rc}')
 
@@ -57,6 +59,7 @@ def on_disconnect(client, userdata, rc):
 
 
 def on_message(client, userdata, msg):
+    print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
     try:
         message = msg.payload.decode()
 
@@ -96,6 +99,18 @@ def on_message(client, userdata, msg):
                       msg_dict["data"]["temperature"])
             print("Data stored in database owo")
             db.disconnect()
+        elif msg_dict["action"] == "GET_DATA":
+            print("Getting data from database...")
+            db = DBStorage()
+            db.connect()
+            data = db.get_measurements(start, end)
+            db.disconnect()
+            print("Data retrieved from database owo")
+            # send data to client
+            msg_dict = {"from": "server", "to": msg_dict["from"],
+                        "action": "SEND_DATA", "data": data}
+            out_msg = json.dumps(msg_dict)
+            client.publish(msg.topic, out_msg)
 
     except Exception as e:
         print(e)
@@ -147,3 +162,5 @@ def run():
 
 if __name__ == '__main__':
     run()
+    while True:
+        continue
