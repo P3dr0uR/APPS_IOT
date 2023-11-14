@@ -9,7 +9,7 @@ from db_storage import DBStorage
 
 from paho.mqtt import client as mqtt_client
 
-BROKER = 'c098ae50.ala.us-east-1.emqxsl.com'
+BROKER = 'b99e31d3.ala.us-east-1.emqxsl.com'
 PORT = 8883
 SUB_TOPIC = "monitores/#"
 TOPIC = "monitores/server"
